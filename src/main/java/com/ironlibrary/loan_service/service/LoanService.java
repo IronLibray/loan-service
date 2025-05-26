@@ -109,8 +109,13 @@ public class LoanService {
     public List<Loan> findLoansByUser(Long userId) {
         log.info("Buscando préstamos del usuario: {}", userId);
 
-        // Verificar que el usuario existe
-        validateUser(userId);
+        // Solo verificar que el usuario existe, no que pueda pedir prestado
+        try {
+            userServiceClient.getUserById(userId);
+        } catch (Exception e) {
+            log.error("Error obteniendo usuario {}: {}", userId, e.getMessage());
+            throw new UserNotValidException("Usuario no encontrado: " + userId);
+        }
 
         return loanRepository.findByUserId(userId);
     }
@@ -131,8 +136,13 @@ public class LoanService {
     public List<Loan> findLoansByBook(Long bookId) {
         log.info("Buscando préstamos del libro: {}", bookId);
 
-        // Verificar que el libro existe
-        validateBook(bookId);
+        // Solo verificar que el libro existe
+        try {
+            bookServiceClient.getBookById(bookId);
+        } catch (Exception e) {
+            log.error("Error obteniendo libro {}: {}", bookId, e.getMessage());
+            throw new BookNotAvailableException("Libro no encontrado: " + bookId);
+        }
 
         return loanRepository.findByBookId(bookId);
     }
@@ -287,6 +297,9 @@ public class LoanService {
             }
 
             return user;
+        } catch (UserNotValidException e) {
+            // Re-lanzar excepciones ya manejadas
+            throw e;
         } catch (Exception e) {
             log.error("Error validando usuario {}: {}", userId, e.getMessage());
             throw new UserNotValidException("Usuario no válido o no encontrado: " + userId);
@@ -305,6 +318,9 @@ public class LoanService {
             }
 
             return book;
+        } catch (BookNotAvailableException e) {
+            // Re-lanzar excepciones ya manejadas
+            throw e;
         } catch (Exception e) {
             log.error("Error validando libro {}: {}", bookId, e.getMessage());
             throw new BookNotAvailableException("Libro no válido o no disponible: " + bookId);
