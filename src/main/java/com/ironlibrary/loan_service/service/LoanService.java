@@ -1,6 +1,11 @@
 package com.ironlibrary.loan_service.service;
 
+import com.ironlibrary.loan_service.client.BookServiceClient;
+import com.ironlibrary.loan_service.client.UserServiceClient;
+import com.ironlibrary.loan_service.client.dto.BookDto;
+import com.ironlibrary.loan_service.client.dto.UserDto;
 import com.ironlibrary.loan_service.model.Loan;
+import com.ironlibrary.loan_service.model.LoanStatus;
 import com.ironlibrary.loan_service.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
