@@ -1,5 +1,7 @@
 package com.ironlibrary.loan_service.controller;
 
+import com.ironlibrary.loan_service.model.Loan;
+import com.ironlibrary.loan_service.service.LoanService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
