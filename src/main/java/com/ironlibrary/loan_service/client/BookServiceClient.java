@@ -16,6 +16,6 @@ public interface BookServiceClient {
     @GetMapping("/api/books/{id}/available")
     Boolean isBookAvailable(@PathVariable("id") Long id);
 
-    @PatchMapping("/api/books/{id}/availability")
+    @PutMapping("/api/books/{id}/availability")
     void updateAvailability(@PathVariable("id") Long id, @RequestParam("copies") int copies);
 }
