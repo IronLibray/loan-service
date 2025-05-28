@@ -69,7 +69,7 @@ class WorkingE2ETest {
     @BeforeEach
     void setUp() {
         System.out.println("🔧 Configurando Working E2E Test");
-        
+
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(webApplicationContext)
                 .build();

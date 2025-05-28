@@ -21,9 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-/**
- * Tests unitarios simples para LoanController
- */
 @ExtendWith(MockitoExtension.class)
 class LoanControllerTest {
 
