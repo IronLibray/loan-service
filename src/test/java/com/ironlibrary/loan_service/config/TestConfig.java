@@ -18,25 +18,23 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-/**
- * Configuración unificada para todos los tests
- * Excluye Feign y Eureka para evitar conflictos
- */
 @TestConfiguration
 @Profile("test")
 @EnableAutoConfiguration(exclude = {
         FeignAutoConfiguration.class,
-        EurekaClientAutoConfiguration.class,
-
+        EurekaClientAutoConfiguration.class
 })
 public class TestConfig {
 
+    /**
+     * Mock del UserServiceClient con comportamiento por defecto
+     */
     @Bean
     @Primary
     public UserServiceClient mockUserServiceClient() {
         UserServiceClient mock = mock(UserServiceClient.class);
 
-        // Setup default behavior
+        // Comportamiento por defecto para casos comunes
         UserDto defaultUser = createDefaultUser();
         when(mock.getUserById(anyLong())).thenReturn(defaultUser);
         when(mock.validateUser(anyLong())).thenReturn(true);
@@ -44,12 +42,15 @@ public class TestConfig {
         return mock;
     }
 
+    /**
+     * Mock del BookServiceClient con comportamiento por defecto
+     */
     @Bean
     @Primary
     public BookServiceClient mockBookServiceClient() {
         BookServiceClient mock = mock(BookServiceClient.class);
 
-        // Setup default behavior
+        // Comportamiento por defecto para casos comunes
         BookDto defaultBook = createDefaultBook();
         when(mock.getBookById(anyLong())).thenReturn(defaultBook);
         when(mock.isBookAvailable(anyLong())).thenReturn(true);
@@ -58,6 +59,9 @@ public class TestConfig {
         return mock;
     }
 
+    /**
+     * Crea un usuario por defecto para tests
+     */
     private UserDto createDefaultUser() {
         UserDto user = new UserDto();
         user.setId(1L);
@@ -66,9 +70,14 @@ public class TestConfig {
         user.setMembershipType("PREMIUM");
         user.setIsActive(true);
         user.setRegistrationDate(LocalDate.now());
+        user.setPhone("123-456-7890");
+        user.setAddress("Test Address");
         return user;
     }
 
+    /**
+     * Crea un libro por defecto para tests
+     */
     private BookDto createDefaultBook() {
         BookDto book = new BookDto();
         book.setId(1L);
