@@ -26,17 +26,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Test MockMvc COMPLETAMENTE FUNCIONAL para Spring Boot 3.4+
- *
- * CARACTERÍSTICAS:
- * - Usa @WebMvcTest para cargar solo el contexto web
- * - @TestConfiguration con @Primary para mocks
- * - @ActiveProfiles("test") para usar configuración de test
- * - Objetos Loan con datos completos y válidos
- * - Reset de mocks en @BeforeEach
- * - Verificaciones completas con print() para debug
- */
 @WebMvcTest(LoanController.class)
 @ActiveProfiles("test")
 class LoanControllerWorkingTest {

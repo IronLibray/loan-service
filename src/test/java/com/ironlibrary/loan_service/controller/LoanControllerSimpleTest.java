@@ -24,10 +24,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Test SIMPLE que funciona garantizado para Spring Boot 3.4+
- * Si este no funciona, hay un problema de configuración base
- */
 @WebMvcTest(LoanController.class)
 class LoanControllerSimpleTest {
 
@@ -40,9 +36,6 @@ class LoanControllerSimpleTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    /**
-     * Mock service configuration
-     */
     @TestConfiguration
     static class TestConfig {
         @Bean

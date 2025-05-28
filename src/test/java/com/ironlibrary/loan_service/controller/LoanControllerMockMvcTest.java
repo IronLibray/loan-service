@@ -25,10 +25,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Tests de integración para LoanController usando MockMvc CORREGIDO
- * Sin @MockBean deprecated, usando @TestConfiguration con @Primary
- */
 @WebMvcTest(LoanController.class)
 @ActiveProfiles("test")
 class LoanControllerMockMvcTest {
@@ -37,16 +33,13 @@ class LoanControllerMockMvcTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private LoanService loanService; // Mock via TestConfiguration
+    private LoanService loanService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     private Loan testLoan;
 
-    /**
-     * Configuración moderna que reemplaza @MockBean deprecated
-     */
     @TestConfiguration
     static class TestConfig {
         @Bean
