@@ -8,13 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-/**
- * Modelo Loan - CORREGIDO para funcionar con H2
- * Cambios principales:
- * - @Enumerated(EnumType.STRING) compatible con H2
- * - Métodos calculados con @JsonIgnore
- * - Manejo seguro de nulls
- */
 @Entity
 @Table(name = "loans")
 @Data
