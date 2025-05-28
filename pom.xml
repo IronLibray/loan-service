@@ -16,7 +16,6 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring-cloud.version>2024.0.1</spring-cloud.version>
-		<!-- Versiones específicas para evitar conflictos -->
 		<mockito.version>5.8.0</mockito.version>
 		<junit.version>5.10.1</junit.version>
 	</properties>
@@ -49,12 +48,11 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- DEPENDENCIAS DE TESTING MODERNAS -->
+		<!-- DEPENDENCIAS DE TESTING -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<!-- Excluir junit-vintage para evitar conflictos -->
 			<exclusions>
 				<exclusion>
 					<groupId>org.junit.vintage</groupId>
@@ -63,38 +61,33 @@
 			</exclusions>
 		</dependency>
 
-		<!-- H2 Database para tests en memoria -->
+		<!-- H2 Database para tests -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
 
-		<!-- JUnit 5 explícito para asegurar versión correcta -->
+		<!-- JUnit 5 y Mockito modernos -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Mockito explícito para asegurar versión correcta -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Mockito extension para JUnit 5 -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 
-		<!-- TestContainers para tests de integración más avanzados (OPCIONAL) -->
+		<!-- TestContainers (opcional) -->
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
@@ -103,13 +96,6 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mysql</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- AssertJ para assertions más fluidas (viene con spring-boot-starter-test) -->
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -140,6 +126,7 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -153,35 +140,35 @@
 				</configuration>
 			</plugin>
 
-			<!-- Plugin de Surefire para tests con configuración moderna -->
+			<!-- Plugin Surefire ARREGLADO -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.2.5</version>
 				<configuration>
-					<!-- Habilitar tests en paralelo para mejor performance -->
-					<parallel>methods</parallel>
-					<threadCount>4</threadCount>
-					<useUnlimitedThreads>false</useUnlimitedThreads>
-
-					<!-- Configuración de JVM para tests -->
+					<!-- JVM args para tests con Spring Boot 3.4+ -->
 					<argLine>
 						-Xmx1024m
 						-XX:+UseG1GC
 						--add-opens java.base/java.lang=ALL-UNNAMED
 						--add-opens java.base/java.util=ALL-UNNAMED
+						--add-opens java.base/java.time=ALL-UNNAMED
 					</argLine>
 
-					<!-- Incluir todos los tests -->
+					<!-- Configuración de tests -->
 					<includes>
 						<include>**/*Test.java</include>
 						<include>**/*Tests.java</include>
-						<include>**/*TestCase.java</include>
 					</includes>
+
+					<!-- Configuración de spring profiles para tests -->
+					<systemPropertyVariables>
+						<spring.profiles.active>test</spring.profiles.active>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 
-			<!-- Plugin de Failsafe para tests de integración -->
+			<!-- Plugin Failsafe para tests de integración -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
@@ -192,6 +179,9 @@
 						<include>**/*E2ETest.java</include>
 						<include>**/*IT.java</include>
 					</includes>
+					<systemPropertyVariables>
+						<spring.profiles.active>test</spring.profiles.active>
+					</systemPropertyVariables>
 				</configuration>
 				<executions>
 					<execution>
@@ -204,46 +194,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<!-- Perfiles para diferentes tipos de tests -->
-	<profiles>
-		<profile>
-			<id>unit-tests</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<includes>
-								<include>**/*Test.java</include>
-							</includes>
-							<excludes>
-								<exclude>**/*IntegrationTest.java</exclude>
-								<exclude>**/*E2ETest.java</exclude>
-							</excludes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>integration-tests</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<includes>
-								<include>**/*IntegrationTest.java</include>
-								<include>**/*E2ETest.java</include>
-							</includes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>

@@ -7,8 +7,7 @@ import com.ironlibrary.loan_service.service.LoanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -27,11 +26,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Tests de integración para LoanController usando MockMvc
- * Compatible con Spring Boot 3.4+ (sin @MockBean deprecated)
+ * Tests de integración para LoanController usando MockMvc CORREGIDO
+ * Sin @MockBean deprecated, usando @TestConfiguration con @Primary
  */
-@SpringBootTest
-@AutoConfigureWebMvc
+@WebMvcTest(LoanController.class)
 @ActiveProfiles("test")
 class LoanControllerMockMvcTest {
 
@@ -39,13 +37,16 @@ class LoanControllerMockMvcTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private LoanService loanService; // Este será el mock
+    private LoanService loanService; // Mock via TestConfiguration
 
     @Autowired
     private ObjectMapper objectMapper;
 
     private Loan testLoan;
 
+    /**
+     * Configuración moderna que reemplaza @MockBean deprecated
+     */
     @TestConfiguration
     static class TestConfig {
         @Bean
@@ -172,7 +173,7 @@ class LoanControllerMockMvcTest {
     }
 
     @Test
-    void deleteUser_ShouldReturnNoContent() throws Exception {
+    void deleteLoan_ShouldReturnNoContent() throws Exception {
         // Given
         doNothing().when(loanService).deleteLoan(1L);
 
@@ -187,5 +188,111 @@ class LoanControllerMockMvcTest {
         mockMvc.perform(get("/api/loans/health"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Loan Service is running on port 8083"));
+    }
+
+    @Test
+    void getLoansByUser_ShouldReturnUserLoans() throws Exception {
+        // Given
+        List<Loan> loans = Arrays.asList(testLoan);
+        when(loanService.findLoansByUser(1L)).thenReturn(loans);
+
+        // When & Then
+        mockMvc.perform(get("/api/loans/user/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].userId").value(1));
+    }
+
+    @Test
+    void getActiveLoansForUser_ShouldReturnActiveLoans() throws Exception {
+        // Given
+        List<Loan> loans = Arrays.asList(testLoan);
+        when(loanService.findActiveLoansForUser(1L)).thenReturn(loans);
+
+        // When & Then
+        mockMvc.perform(get("/api/loans/user/1/active"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].status").value("ACTIVE"));
+    }
+
+    @Test
+    void getLoansByBook_ShouldReturnBookLoans() throws Exception {
+        // Given
+        List<Loan> loans = Arrays.asList(testLoan);
+        when(loanService.findLoansByBook(1L)).thenReturn(loans);
+
+        // When & Then
+        mockMvc.perform(get("/api/loans/book/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].bookId").value(1));
+    }
+
+    @Test
+    void getOverdueLoans_ShouldReturnOverdueLoans() throws Exception {
+        // Given
+        testLoan.setStatus(LoanStatus.OVERDUE);
+        List<Loan> loans = Arrays.asList(testLoan);
+        when(loanService.findOverdueLoans()).thenReturn(loans);
+
+        // When & Then
+        mockMvc.perform(get("/api/loans/overdue"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].status").value("OVERDUE"));
+    }
+
+    @Test
+    void getLoansDueSoon_ShouldReturnLoansDueSoon() throws Exception {
+        // Given
+        List<Loan> loans = Arrays.asList(testLoan);
+        when(loanService.findLoansDueSoon(3)).thenReturn(loans);
+
+        // When & Then
+        mockMvc.perform(get("/api/loans/due-soon?days=3"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    void updateLoan_ShouldReturnUpdatedLoan() throws Exception {
+        // Given
+        Loan updatedLoan = new Loan();
+        updatedLoan.setId(1L);
+        updatedLoan.setUserId(1L);
+        updatedLoan.setBookId(1L);
+        updatedLoan.setDueDate(LocalDate.now().plusDays(21));
+        updatedLoan.setNotes("Updated notes");
+        updatedLoan.setStatus(LoanStatus.ACTIVE);
+
+        when(loanService.updateLoan(eq(1L), any(Loan.class))).thenReturn(updatedLoan);
+
+        // When & Then
+        mockMvc.perform(put("/api/loans/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedLoan)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.notes").value("Updated notes"));
+    }
+
+    @Test
+    void extendLoan_ShouldReturnExtendedLoan() throws Exception {
+        // Given
+        testLoan.setDueDate(LocalDate.now().plusDays(21)); // Extended by 7 days
+        when(loanService.extendLoan(1L, 7)).thenReturn(testLoan);
+
+        // When & Then
+        mockMvc.perform(patch("/api/loans/1/extend?days=7"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1));
     }
 }
