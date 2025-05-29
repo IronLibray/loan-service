@@ -60,7 +60,7 @@ class LoanServiceE2ETest {
     }
 
     private void setupMockMvc() {
-        // Configurar MockMvc standalone (sin Spring Context)
+
         mockMvc = MockMvcBuilders.standaloneSetup(loanController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
@@ -69,7 +69,7 @@ class LoanServiceE2ETest {
 
     private void setupObjectMapper() {
         objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules(); // Para soporte de LocalDate
+        objectMapper.findAndRegisterModules();
         System.out.println("🔧 ObjectMapper configurado");
     }
 
@@ -86,7 +86,7 @@ class LoanServiceE2ETest {
     }
 
     private void resetMocks() {
-        // Reset explícito del mock (opcional, Mockito lo hace automáticamente)
+
         reset(loanService);
         System.out.println("🧹 Mocks reseteados");
     }
