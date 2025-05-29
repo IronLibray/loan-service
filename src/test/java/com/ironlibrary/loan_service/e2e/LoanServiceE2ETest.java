@@ -25,21 +25,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Test E2E Moderno SIN @MockBean (deprecated)
- *
- * ESTRATEGIA MODERNA 2025:
- * - @ExtendWith(MockitoExtension.class) - Mockito puro
- * - @Mock - Mocks modernos sin Spring Boot
- * - MockMvc.standaloneSetup() - Configuración manual
- * - Sin dependencias de Spring Boot Testing deprecated
- * - Testing puro y rápido
- */
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 class LoanServiceE2ETest {
 
-    // ✅ MOCKITO PURO - Sin @MockBean deprecated
     @Mock
     private LoanService loanService;
 
@@ -55,7 +44,6 @@ class LoanServiceE2ETest {
     void setUp() {
         System.out.println("🚀 E2E Test Moderno (Sin @MockBean) - Configuración iniciada");
 
-        // ✅ CONFIGURACIÓN MANUAL COMPLETA
         setupController();
         setupMockMvc();
         setupObjectMapper();

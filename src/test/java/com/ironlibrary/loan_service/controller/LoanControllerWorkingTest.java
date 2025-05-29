@@ -41,9 +41,6 @@ class LoanControllerWorkingTest {
 
     private Loan validLoan;
 
-    /**
-     * Configuración de test que reemplaza @MockBean deprecated
-     */
     @TestConfiguration
     static class TestConfig {
         @Bean
@@ -57,10 +54,8 @@ class LoanControllerWorkingTest {
     void setUp() {
         System.out.println("🔧 Configurando test MockMvc");
 
-        // IMPORTANTE: Reset del mock antes de cada test
         reset(loanService);
 
-        // Crear préstamo válido con TODOS los campos necesarios
         validLoan = new Loan();
         validLoan.setId(1L);
         validLoan.setUserId(1L);
