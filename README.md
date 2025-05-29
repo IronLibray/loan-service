@@ -900,9 +900,3 @@ Para reportar bugs o solicitar nuevas características, crear un issue en el rep
 **Puerto del servicio**: 8083  
 **Base de datos**: loan_service  
 **Nombre en Eureka**: LOAN-SERVICE
-
-### Enlaces Útiles
-- **Eureka Dashboard**: http://localhost:8761
-- **User Service**: http://localhost:8082/api/users/health
-- **Book Service**: http://localhost:8081/api/books/health
-- **Gateway**: http://localhost:8080
